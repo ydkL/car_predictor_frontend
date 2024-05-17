@@ -8,7 +8,8 @@ function RecordPage() {
     const [manufacturerName, setManufacturerName] = useState('');
     const [error, setError] = useState('');
     const [responseText, setResponseText] = useState('');
-
+    const baseURL = process.env.REACT_APP_db_base_url;
+    const [loading, setLoading] = useState(false); // Loading state
     const labels = [
         "Grid",
         "Comfort",
@@ -42,9 +43,9 @@ function RecordPage() {
         }
 
         setError('');
-
+        setLoading(true); // Set loading state to true
         event.preventDefault();
-        const endpoint = 'http://localhost:8001/items/';
+        const endpoint = `${baseURL}/items/`;
     
         try {
           const response = await fetch(endpoint, {
@@ -75,12 +76,15 @@ function RecordPage() {
           console.log('Data submitted successfully');
         } catch (error) {
           console.error('Error:', error);
-        }
+        }finally {
+            setLoading(false); // Set loading state back to false
+          }
       };
 
     return (
         <div className="App">
-            <header className="App-header">
+            <div className="record-page">
+            <header className="App-header">           
                 <h1>Vote a Car</h1>
                 <form onSubmit={handleSubmit}>
                     <table>
@@ -117,10 +121,10 @@ function RecordPage() {
                         </tbody>
                     </table>
                     {error && <div style={{ color: 'red' }}>{error}</div>}
-                    <button type="submit">Submit</button>
+                    <button type="submit" disabled={loading}>Submit</button>
                 </form>
-
             </header>
+            </div>
         </div>
     );
 }

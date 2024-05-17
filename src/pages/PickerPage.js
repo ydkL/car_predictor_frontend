@@ -6,7 +6,8 @@ function PickerPage() {
     const [values, setValues] = useState(Array(9).fill(1)); // Default values
     const [predictedModel, setPredictedModel] = useState('');
     const [responseText, setResponseText] = useState('');
-  
+    const baseURL = process.env.REACT_APP_ml_base_url;
+    const [loading, setLoading] = useState(false); // Loading state
     const labels = [
       "Grid",
       "Comfort",
@@ -31,9 +32,10 @@ function PickerPage() {
   
     const handleSubmit = async (event) => {
       event.preventDefault();
+      setLoading(true); // Set loading state to true
       // Construct the query parameters for the endpoint
       const queryParams = values.map((value, index) => `param${index + 1}=${value}`).join('&');
-      const endpoint = `http://localhost:8000/process_data/?${queryParams}`;
+      const endpoint = `${baseURL}/process_data/?${queryParams}`;
   
       // Send values to server
       try {
@@ -47,11 +49,15 @@ function PickerPage() {
         console.log('Response received:', responseData);
       } catch (error) {
         console.error('Error:', error);
+      }finally {
+        setLoading(false); // Set loading state back to false
       }
+      
     };
   
     return (
       <div className="App">
+         <div className="record-page">
         <header className="App-header">
           <h1>Car Predictor</h1>
           <form onSubmit={handleSubmit}>
@@ -89,10 +95,10 @@ function PickerPage() {
                 <input type="text" value={predictedModel} readOnly />
               </label>
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit" disabled={loading}>Submit</button>
           </form>
-  
         </header>
+        </div>
       </div>
     );
 }
